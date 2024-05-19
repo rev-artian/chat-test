@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react';
-import { openai } from './openai';
 
 import Conversation from './components/Conversation';
 import MessageInput from './components/MessageInput';
@@ -27,24 +26,40 @@ export default function App() {
       ]);
       setUserMessage(() => '');
 
-      const stream = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: userMessage }],
-        stream: true,
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userMessage }),
       });
 
-      let streamedMessage = '';
-      for await (const part of stream) {
-        setAiMessage((prev) => prev + part.choices[0].delta.content);
-
-        if (part.choices[0].finish_reason === 'stop') {
-          setMessages((prev) => [...prev, { body: streamedMessage, sender: 'ai' }]);
-          setAiMessage(() => '');
-          break;
-        } else {
-          streamedMessage += part.choices[0].delta.content;
-        }
+      if (!res.ok) {
+        console.log('Error in response');
+        return;
       }
+
+      let streamedMessage = '';
+      const reader = res.body?.getReader();
+
+      while (reader) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const decoded = new TextDecoder('utf-8').decode(value);
+        streamedMessage += decoded;
+        setAiMessage((prev) => prev + decoded);
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          body: streamedMessage,
+          sender: 'ai',
+        },
+      ]);
+
+      setAiMessage('');
     },
     [userMessage],
   );

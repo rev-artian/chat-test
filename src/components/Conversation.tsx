@@ -1,16 +1,31 @@
-export default function Conversation() {
+type Message = {
+  body: string;
+  sender: string;
+};
+
+export default function Conversation({ messages }: { messages: Message[] }) {
   return (
     <div className="flex flex-col gap-2 overflow-y-scroll">
-      <ChatBubble message="hi" isSender={true} />
-      <ChatBubble message="hello" isSender={false} />
-      <ChatBubble message={lorem} isSender={true} />
-      <ChatBubble message={lorem} isSender={false} />
+      <ChatBubble message="hi" isUser={true} />
+      <ChatBubble message="hello" isUser={false} />
+      <ChatBubble message={lorem} isUser={true} />
+      <ChatBubble message={lorem} isUser={false} />
+      {messages &&
+        messages.map((message, index) => {
+          return (
+            <ChatBubble
+              message={message.body}
+              isUser={message.sender === 'human'}
+              key={index}
+            />
+          );
+        })}
     </div>
   );
 }
 
-function ChatBubble({ message, isSender = true }: { message: string; isSender?: boolean }) {
-  const style = isSender ? ' bg-rose-600 text-white self-end' : ' bg-slate-200';
+function ChatBubble({ message, isUser = true }: { message: string; isUser?: boolean }) {
+  const style = isUser ? ' bg-rose-600 text-white self-end' : ' bg-slate-200';
   return <div className={'max-w-xl rounded-3xl px-4 py-2' + style}>{message}</div>;
 }
 

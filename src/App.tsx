@@ -1,16 +1,28 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import OpenAI from 'openai';
 
-function App() {
+import Conversation from './components/Conversation';
+import MessageInput from './components/MessageInput';
+
+export default function App() {
+  const [conversations, setConversations] = useState('');
+  const [aiMessage, setAiMessage] = useState('');
+  const [userMessage, setUserMessage] = useState('');
+
+  const handleSubmit = useCallback(async (e) => {
+    //
+  }, []);
+
   return (
-    <div>
-      <h1>Vite + React</h1>
-      <div className="text-orange-500">
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+    <div className="flex w-full justify-center">
+      <div className="flex h-screen w-full max-w-[800px] flex-col justify-between p-6">
+        <Conversation />
+        <MessageInput
+          userMessage={userMessage}
+          setUserMessage={setUserMessage}
+          handleSubmit={handleSubmit}
+        />
       </div>
     </div>
   );
 }
-
-export default App;

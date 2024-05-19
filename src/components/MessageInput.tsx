@@ -5,10 +5,10 @@ export default function MessageInput({
 }: {
   userMessage: string;
   setUserMessage: React.Dispatch<React.SetStateAction<string>>;
-  handleSubmit: React.FormEventHandler<HTMLButtonElement>;
+  handleSubmit: React.FormEventHandler<HTMLFormElement>;
 }) {
   return (
-    <form className="sticky bottom-0 mt-6 flex gap-2">
+    <form className="sticky bottom-0 mt-6 flex gap-2" onSubmit={handleSubmit}>
       <input
         className="grow rounded-full bg-slate-300 p-2 px-4"
         onChange={(e) => setUserMessage(e.target.value)}
@@ -16,11 +16,7 @@ export default function MessageInput({
         type="text"
         value={userMessage}
       />
-      <button
-        className="flex-none rounded-full bg-slate-300 p-2"
-        onSubmit={handleSubmit}
-        type="submit"
-      >
+      <button className="flex-none rounded-full bg-slate-300 p-2" type="submit">
         <PaperAirplaneIcon />
       </button>
     </form>
